@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600&display=swap');
+
+:root {
+    --primary-color: #007AFF;
+    --background-color: #F2F2F7;
+    --text-color: #1D1D1F;
+    --secondary-text-color: #86868B;
+    --border-color: #D2D2D7;
+}
+
+body {
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 20px;
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #EAEAEA; /* Màu nền kiểu Windows XP */
+    border: 2px solid #A4A4A4; /* Đường viền kiểu Windows XP */
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.header {
+    background-color: #C3C3C3; /* Màu nền cho header */
+    color: #000000; /* Màu chữ cho header */
+    padding: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 2px solid #A4A4A4; /* Đường viền cho header */
+}
+
+.content {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+input, textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.button {
+    background-color: var(--primary-color);
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+#invoiceTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+}
+
+#invoiceTable th, #invoiceTable td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid var(--border-color);
+}
+
+#invoiceTable th {
+    font-weight: bold;
+    color: var(--secondary-text-color);
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#productList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#productList li {
+    margin-bottom: 12px;
+}
+
+.product-input {
+    display: flex;
+    gap: 8px;
+}
+
+.product-input input {
+    flex: 1;
+}
+
+.remove-product {
+    background-color: #FF3B30;
+    color: #FFFFFF;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.remove-product:hover {
+    background-color: #D70015;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 16px;
+    color: var(--secondary-text-color);
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.total-amount {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Ẩn modal khi không sử dụng */
+    position: fixed;
+    z-index: 1000; /* Đặt trên các phần tử khác */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Màu nền với độ trong suốt */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #EAEAEA; /* Màu nền modal kiểu Windows XP */
+    border: 2px solid #A4A4A4;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    position: relative;
+    width: 400px; /* Kích thước cố định cho modal */
+}
+
+.close {
+    color: #000;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: red;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.header {
+    padding: 10px;
+    font-size: 18px;
+    text-align: center;
+    border-bottom: 1px solid #A0A0A0;
+}
