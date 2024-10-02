@@ -37,7 +37,7 @@
             margin-bottom: 20px;
         }
 
-        .form-container, .history-container {
+        .form-container {
             flex: 1;
             background: white;
             border-radius: 8px;
@@ -49,7 +49,7 @@
             gap: 15px;
         }
 
-        .form-container:hover, .history-container:hover {
+        .form-container:hover {
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
@@ -63,7 +63,7 @@
             transition: border-color 0.3s ease;
         }
 
-        input[type="text"]:focus, input[type="email"]:focus, input[type="number"], input[type="phone"]:focus {
+        input[type="text"]:focus, input[type="email"]:focus, input[type="number"]:focus, input[type="phone"]:focus {
             border-color: var(--primary-color);
             outline: none;
         }
@@ -125,13 +125,37 @@
             margin-top: 20px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .history-container {
+            display: none; /* Ẩn mặc định */
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-history {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .toggle-history:hover {
+            background-color: #2980b9;
         }
 
         .fade-in {
             animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .currency {
@@ -185,7 +209,11 @@
                 <button type="submit">Lưu hóa đơn</button>
             </form>
         </div>
-        <div class="history-container fade-in">
+
+        <div class="toggle-history fade-in" onclick="toggleHistory()">
+            🕒 Lịch sử Hóa đơn
+        </div>
+        <div class="history-container fade-in" id="historyContainer">
             <h2>Lịch sử Hóa đơn</h2>
             <input type="text" id="searchInvoice" placeholder="Tìm kiếm hóa đơn" oninput="searchInvoice()" style="margin-bottom: 10px; padding: 10px; border-radius: 4px;">
             <div id="invoiceList"></div>
@@ -198,9 +226,17 @@
         if (!localStorage.getItem('loggedIn')) {
             window.location.href = 'login.html'; // Nếu chưa đăng nhập, chuyển đến trang đăng nhập
         }
-    </script>
-    
-    <script>
+
+        function toggleHistory() {
+            const historyContainer = document.getElementById('historyContainer');
+            if (historyContainer.style.display === 'none' || historyContainer.style.display === '') {
+                historyContainer.style.display = 'block';
+                historyContainer.classList.add('fade-in');
+            } else {
+                historyContainer.style.display = 'none';
+            }
+        }
+
         let invoices = JSON.parse(localStorage.getItem('invoices')) || [];
 
         function addProduct() {
@@ -223,150 +259,69 @@
         }
 
         function calculateTotal() {
-            const products = document.querySelectorAll('.product');
             let total = 0;
+            const products = document.querySelectorAll('.product');
             products.forEach(product => {
                 const price = parseFloat(product.querySelector('.productPrice').value) || 0;
-                const quantity = parseInt(product.querySelector('.productQuantity').value) || 0;
+                const quantity = parseFloat(product.querySelector('.productQuantity').value) || 0;
                 total += price * quantity;
             });
             document.getElementById('totalAmount').value = total.toFixed(2);
         }
 
-        document.getElementById('productList').addEventListener('input', calculateTotal);
-
-        document.getElementById('invoiceForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const invoiceId = 'INV' + Date.now();
-            const customerName = document.getElementById('customerName').value;
-            const customerEmail = document.getElementById('customerEmail').value;
-            const products = Array.from(document.querySelectorAll('.product')).map(product => ({
-                name: product.querySelector('.productName').value,
-                price: parseFloat(product.querySelector('.productPrice').value),
-                quantity: parseInt(product.querySelector('.productQuantity').value)
-            }));
-            const totalAmount = parseFloat(document.getElementById('totalAmount').value);
-
+        document.getElementById('invoiceForm').addEventListener('submit', function (event) {
+            event.preventDefault();
             const invoice = {
-                id: invoiceId,
-                customerName,
-                customerEmail,
-                products,
-                totalAmount,
-                date: new Date().toLocaleString()
+                customerName: document.getElementById('customerName').value,
+                customerPhone: document.getElementById('customerPhone').value,
+                customerEmail: document.getElementById('customerEmail').value,
+                products: Array.from(document.querySelectorAll('.product')).map(product => ({
+                    name: product.querySelector('.productName').value,
+                    price: parseFloat(product.querySelector('.productPrice').value),
+                    quantity: parseFloat(product.querySelector('.productQuantity').value),
+                })),
+                totalAmount: parseFloat(document.getElementById('totalAmount').value),
             };
 
             invoices.push(invoice);
             localStorage.setItem('invoices', JSON.stringify(invoices));
-            updateInvoiceList();
-            this.reset();
-            calculateTotal();
+            alert('Hóa đơn đã được lưu!');
+            document.getElementById('invoiceForm').reset();
+            document.getElementById('totalAmount').value = '';
         });
-
-        function updateInvoiceList() {
-            const invoiceList = document.getElementById('invoiceList');
-            invoiceList.innerHTML = '<h3>Danh sách hóa đơn</h3>';
-            invoices.forEach(invoice => {
-                const invoiceItem = document.createElement('div');
-                invoiceItem.className = 'invoiceItem fade-in';
-                invoiceItem.innerHTML = `
-                    <a href="#" class="toggle-details" onclick="toggleDetails('${invoice.id}')">
-                        📂 Hóa đơn ${invoice.id} - ${invoice.customerName}
-                    </a>
-                    <button onclick="deleteInvoice('${invoice.id}')" style="margin-left: 10px; background-color: red; color: white;">Xóa</button>
-                    <button onclick="sendEmail('${invoice.id}')" class="send-email" style="margin-left: 10px; background-color: var(--primary-color); color: white;">📧</button>
-                `;
-                invoiceList.appendChild(invoiceItem);
-            });
-        }
-
-        function toggleDetails(invoiceId) {
-            const detailsDiv = document.getElementById('invoiceDetails');
-            const invoice = invoices.find(inv => inv.id === invoiceId);
-
-            if (detailsDiv.innerHTML.includes(invoiceId)) {
-                detailsDiv.innerHTML = ''; // Ẩn chi tiết nếu đã mở
-            } else {
-                detailsDiv.innerHTML = `
-                    <h3>Chi tiết Hóa đơn ${invoice.id}</h3>
-                    <p>Khách hàng: ${invoice.customerName}</p>
-                    <p>Email: ${invoice.customerEmail}</p>
-                    <p>Ngày tạo: ${invoice.date}</p>
-                    <h4>Sản phẩm:</h4>
-                    <ul>
-                        ${invoice.products.map(product => `<li>${product.name} - Giá: ${product.price} VND x ${product.quantity}</li>`).join('')}
-                    </ul>
-                    <p>Tổng cộng: <span class="currency">${invoice.totalAmount.toFixed(2)} VND</span></p>
-                    <button onclick="generatePDF('${invoice.id}')">Lưu PDF</button>
-                `;
-            }
-        }
-
-        function deleteInvoice(invoiceId) {
-            invoices = invoices.filter(inv => inv.id !== invoiceId);
-            localStorage.setItem('invoices', JSON.stringify(invoices));
-            updateInvoiceList();
-            document.getElementById('invoiceDetails').innerHTML = ''; // Xóa chi tiết khi xóa hóa đơn
-        }
-
-        function generatePDF(invoiceId) {
-            const invoice = invoices.find(inv => inv.id === invoiceId);
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            doc.setFontSize(20);
-            doc.text('Hóa đơn ' + invoice.id, 20, 20);
-            doc.setFontSize(12);
-            doc.text('Khách hàng: ' + invoice.customerName, 20, 30);
-            doc.text('Email: ' + invoice.customerEmail, 20, 40);
-            doc.text('Ngày tạo: ' + invoice.date, 20, 50);
-            doc.text('Sản phẩm:', 20, 60);
-            invoice.products.forEach((product, index) => {
-                doc.text(`${product.name} - Giá: ${product.price} VND x ${product.quantity}`, 20, 70 + (10 * index));
-            });
-            doc.text('Tổng cộng: ' + invoice.totalAmount.toFixed(2) + ' VND', 20, 80 + (10 * invoice.products.length));
-            
-            doc.save('invoice_' + invoice.id + '.pdf');
-        }
-
-        function sendEmail(invoiceId) {
-            const invoice = invoices.find(inv => inv.id === invoiceId);
-            const subject = 'Hóa đơn ' + invoice.id;
-            const body = `
-                Hóa đơn ${invoice.id}\n
-                Khách hàng: ${invoice.customerName}\n
-                Email: ${invoice.customerEmail}\n
-                Ngày tạo: ${invoice.date}\n
-                Sản phẩm:\n
-                ${invoice.products.map(product => `${product.name} - Giá: ${product.price} VND x ${product.quantity}`).join('\n')}
-                Tổng cộng: ${invoice.totalAmount.toFixed(2)} VND
-            `;
-            const mailtoLink = `mailto:${invoice.customerEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.location.href = mailtoLink;
-        }
 
         function searchInvoice() {
             const query = document.getElementById('searchInvoice').value.toLowerCase();
-            const filteredInvoices = invoices.filter(invoice => invoice.id.toLowerCase().includes(query));
             const invoiceList = document.getElementById('invoiceList');
-            invoiceList.innerHTML = '<h3>Danh sách hóa đơn</h3>';
+            invoiceList.innerHTML = '';
 
-            filteredInvoices.forEach(invoice => {
-                const invoiceItem = document.createElement('div');
-                invoiceItem.className = 'invoiceItem fade-in';
-                invoiceItem.innerHTML = `
-                    <a href="#" class="toggle-details" onclick="toggleDetails('${invoice.id}')">
-                        📂 Hóa đơn ${invoice.id} - ${invoice.customerName}
-                    </a>
-                    <button onclick="deleteInvoice('${invoice.id}')" style="margin-left: 10px; background-color: red; color: white;">Xóa</button>
-                    <button onclick="sendEmail('${invoice.id}')" class="send-email" style="margin-left: 10px; background-color: var(--primary-color); color: white;">📧</button>
-                `;
-                invoiceList.appendChild(invoiceItem);
+            invoices.forEach((invoice, index) => {
+                if (invoice.customerName.toLowerCase().includes(query)) {
+                    const invoiceItem = document.createElement('a');
+                    invoiceItem.textContent = `${invoice.customerName} - ${invoice.totalAmount.toFixed(2)} VNĐ`;
+                    invoiceItem.href = '#';
+                    invoiceItem.onclick = () => showInvoiceDetails(index);
+                    invoiceList.appendChild(invoiceItem);
+                }
             });
         }
 
-        // Cập nhật danh sách hóa đơn ngay khi tải trang
-        updateInvoiceList();
+        function showInvoiceDetails(index) {
+            const invoiceDetails = document.getElementById('invoiceDetails');
+            invoiceDetails.innerHTML = `
+                <h3>Chi tiết hóa đơn</h3>
+                <p><strong>Tên khách hàng:</strong> ${invoices[index].customerName}</p>
+                <p><strong>SĐT:</strong> ${invoices[index].customerPhone}</p>
+                <p><strong>Email:</strong> ${invoices[index].customerEmail}</p>
+                <h4>Sản phẩm:</h4>
+                <ul>
+                    ${invoices[index].products.map(product => `
+                        <li>${product.name} - ${product.price} VNĐ x ${product.quantity}</li>
+                    `).join('')}
+                </ul>
+                <p><strong>Tổng cộng:</strong> ${invoices[index].totalAmount.toFixed(2)} VNĐ</p>
+            `;
+        }
     </script>
 </body>
 </html>
