@@ -3,305 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Điểm Danh - Space X (Apple Style)</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <title>Hệ thống Đăng ký và Check-in Khách</title>
     <style>
+        :root {
+            --primary-color: #007AFF;
+            --background-color: #F2F2F7;
+            --text-color: #1C1C1E;
+            --secondary-text-color: #6E6E73;
+            --border-color: #D2D2D7;
+            --menu-width: 200px;
+        }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: #f5f5f7;
-            color: #1d1d1f;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+        }
+        .menu {
+            width: var(--menu-width);
+            background-color: #ffffff;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            position: fixed;
+        }
+        .menu ul {
+            list-style-type: none;
+            padding: 0;
             margin: 0;
         }
+        .menu li {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .menu li:hover, .menu li.active {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            margin-left: var(--menu-width);
+        }
         .container {
-            background-color: #ffffff;
-            border-radius: 18px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 40px;
             max-width: 800px;
-            margin: 40px auto;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            font-weight: 600;
         }
         h1 {
-            color: #1d1d1f;
-            font-size: 32px;
-            font-weight: 600;
+            font-size: 28px;
             margin-bottom: 30px;
-            text-align: center;
+        }
+        h2 {
+            font-size: 22px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 40px;
         }
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
-            color: #1d1d1f;
+            color: var(--secondary-text-color);
         }
-        input[type="text"], input[type="date"], input[type="email"] {
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"] {
             width: 100%;
             padding: 12px;
             margin-bottom: 20px;
-            border: 1px solid #d2d2d7;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            box-sizing: border-box;
             font-size: 16px;
-            transition: border-color 0.3s ease;
         }
-        input[type="text"]:focus, input[type="date"]:focus, input[type="email"]:focus {
-            outline: none;
-            border-color: #0071e3;
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
         }
         button {
-            background-color: #0071e3;
-            color: #ffffff;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
             border: none;
-            padding: 12px 20px;
             border-radius: 8px;
-            cursor: pointer;
             font-size: 16px;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            margin: 0 10px;
         }
         button:hover {
-            background-color: #0077ed;
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        #camera, #photo, #checkinCamera, #checkinPhoto {
+            width: 100%;
+            max-width: 320px;
+            height: 240px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            object-fit: cover;
         }
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 30px;
-            background-color: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        th, td {
-            padding: 16px;
-            text-align: left;
-            border-bottom: 1px solid #d2d2d7;
-        }
-        th {
-            background-color: #f5f5f7;
-            font-weight: 600;
-            color: #1d1d1f;
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        .status-group {
-            margin-bottom: 20px;
-        }
-        .status-group label {
-            display: inline-block;
-            margin-right: 20px;
-        }
-        .present {
-            color: #28cd41;
-        }
-        .absent {
-            color: #ff3b30;
-        }
-        #exportButton, #emailButton {
-            display: none;
             margin-top: 20px;
         }
-        .edit-btn, .delete-btn {
-            padding: 8px 16px;
-            margin: 2px;
-            font-size: 14px;
-            border-radius: 6px;
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
         }
-        .edit-btn {
-            background-color: #ffd60a;
-            color: #1d1d1f;
+        th {
+            background-color: #F8F8F8;
+            font-weight: 600;
         }
-        .delete-btn {
-            background-color: #ff3b30;
-            color: #ffffff;
+        tr:first-child th:first-child {
+            border-top-left-radius: 8px;
+        }
+        tr:first-child th:last-child {
+            border-top-right-radius: 8px;
+        }
+        tr:last-child td:first-child {
+            border-bottom-left-radius: 8px;
+        }
+        tr:last-child td:last-child {
+            border-bottom-right-radius: 8px;
+        }
+        #recognizedInfo {
+            background-color: #F2F2F7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        #recognizedInfo h3 {
+            margin-top: 0;
+            color: var(--secondary-text-color);
+        }
+        #recognizedInfo p {
+            margin: 10px 0;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Form Điểm Danh - Space X</h1>
-        <form id="attendanceForm">
-            <label for="date">Ngày:</label>
-            <input type="date" id="date" name="date" required>
+    <div class="menu">
+        <ul>
+            <li onclick="showSection('registration')" class="active">Đăng ký khách hàng</li>
+            <li onclick="showSection('checkin')">Check-in</li>
+            <li onclick="showSection('history')">Lịch sử Check-in</li>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="container">
+            <h1>Hệ thống Đăng ký và Check-in Khách</h1>
             
-            <label for="subject">Môn học:</label>
-            <input type="text" id="subject" name="subject" required>
-            
-            <label for="studentName">Tên học sinh:</label>
-            <input type="text" id="studentName" name="studentName">
-            
-            <label for="studentEmail">Email học sinh:</label>
-            <input type="email" id="studentEmail" name="studentEmail" required>
-            
-            <div class="status-group">
-                <label>Trạng thái:</label>
-                <label>
-                    <input type="radio" name="status" value="Có mặt" checked> Có mặt
-                </label>
-                <label>
-                    <input type="radio" name="status" value="Vắng mặt"> Vắng mặt
-                </label>
+            <div id="registration" class="section active">
+                <h2>Đăng ký Khách</h2>
+                <form id="registrationForm">
+                    <label for="name">Họ và tên</label>
+                    <input type="text" id="name" name="name" required placeholder="Nhập họ và tên">
+                    
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="Nhập địa chỉ email">
+                    
+                    <label for="phone">Số điện thoại</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="Nhập số điện thoại">
+                    
+                    <label for="visitDate">Ngày đến</label>
+                    <input type="date" id="visitDate" name="visitDate" required>
+                    
+                    <h3>Chụp ảnh đăng ký</h3>
+                    <video id="camera" autoplay></video>
+                    <div class="button-group">
+                        <button type="button" onclick="capturePhoto()">Chụp ảnh</button>
+                        <button type="submit">Đăng ký</button>
+                    </div>
+                    <canvas id="photo"></canvas>
+                </form>
             </div>
             
-            <button type="button" onclick="addStudent()">Thêm học sinh</button>
-        </form>
-        
-        <div id="attendanceTable"></div>
-        
-        <button id="exportButton" onclick="exportToPNG()">Xuất bảng thành PNG</button>
-        <button id="emailButton" onclick="sendEmails()">Gửi qua Email</button>
-    </div>
-    <script>
-        let students = [];
-        let editingIndex = -1;
+            <div id="checkin" class="section">
+                <h2>Check-in Khách</h2>
+                <form id="checkinForm">
+                    <h3>Chụp ảnh check-in</h3>
+                    <video id="checkinCamera" autoplay></video>
+                    <div class="button-group">
+                        <button type="button" onclick="captureCheckinPhoto()">Chụp ảnh để Check-in</button>
+                        <button type="submit">Xác nhận Check-in</button>
+                    </div>
+                    <canvas id="checkinPhoto"></canvas>
+                    
+                    <div id="recognizedInfo" style="display: none;">
+                        <h3>Thông tin nhận diện</h3>
+                        <p id="recognizedName"></p>
+                        <p id="recognizedEmail"></p>
+                        <p id="recognizedPhone"></p>
+                    </div>
+                </form>
+            </div>
 
-        window.onload = function() {
-            const savedStudents = localStorage.getItem('attendanceData');
-            if (savedStudents) {
-                students = JSON.parse(savedStudents);
-                updateTable();
-            }
-        }
-
-        function addStudent() {
-            const date = document.getElementById('date').value;
-            const subject = document.getElementById('subject').value;
-            const name = document.getElementById('studentName').value;
-            const email = document.getElementById('studentEmail').value;
-            const status = document.querySelector('input[name="status"]:checked').value;
-
-            if (date && subject && name && email) {
-                if (editingIndex === -1) {
-                    students.push({ date, subject, name, email, status });
-                } else {
-                    students[editingIndex] = { date, subject, name, email, status };
-                    editingIndex = -1;
-                }
-                updateTable();
-                resetForm();
-                saveData();
-            } else {
-                alert('Vui lòng điền đầy đủ thông tin!');
-            }
-        }
-
-        function resetForm() {
-            document.getElementById('studentName').value = '';
-            document.getElementById('studentEmail').value = '';
-            document.querySelector('input[name="status"][value="Có mặt"]').checked = true;
-            document.getElementById('attendanceForm').querySelector('button').textContent = 'Thêm học sinh';
-        }
-
-        function updateTable() {
-            const tableDiv = document.getElementById('attendanceTable');
-            if (students.length > 0) {
-                let tableHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Ngày</th>
-                                <th>Môn học</th>
-                                <th>Tên học sinh</th>
-                                <th>Email</th>
-                                <th>Trạng thái</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                students.forEach((student, index) => {
-                    const statusClass = student.status === 'Có mặt' ? 'present' : 'absent';
-                    tableHTML += `
+            <div id="history" class="section">
+                <h2>Lịch sử Check-in</h2>
+                <table id="checkinHistory">
+                    <thead>
                         <tr>
-                            <td>${index + 1}</td>
-                            <td>${student.date}</td>
-                            <td>${student.subject}</td>
-                            <td>${student.name}</td>
-                            <td>${student.email}</td>
-                            <td class="${statusClass}">${student.status}</td>
-                            <td>
-                                <button class="edit-btn" onclick="editStudent(${index})">Sửa</button>
-                                <button class="delete-btn" onclick="deleteStudent(${index})">Xóa</button>
-                            </td>
+                            <th>Họ và tên</th>
+                            <th>Thời gian Check-in</th>
                         </tr>
-                    `;
-                });
-                tableHTML += `
-                        </tbody>
-                    </table>
-                `;
-                tableDiv.innerHTML = tableHTML;
-                document.getElementById('exportButton').style.display = 'inline-block';
-                document.getElementById('emailButton').style.display = 'inline-block';
-            } else {
-                tableDiv.innerHTML = '';
-                document.getElementById('exportButton').style.display = 'none';
-                document.getElementById('emailButton').style.display = 'none';
+                    </thead>
+                    <tbody>
+                        <!-- Dữ liệu lịch sử check-in sẽ được thêm vào đây bằng JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Khởi tạo camera
+        async function initCamera(videoElement) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = stream;
+            } catch (err) {
+                console.error("Không thể truy cập camera: ", err);
             }
         }
 
-        function editStudent(index) {
-            const student = students[index];
-            document.getElementById('date').value = student.date;
-            document.getElementById('subject').value = student.subject;
-            document.getElementById('studentName').value = student.name;
-            document.getElementById('studentEmail').value = student.email;
-            document.querySelector(`input[name="status"][value="${student.status}"]`).checked = true;
-            document.getElementById('attendanceForm').querySelector('button').textContent = 'Cập nhật';
-            editingIndex = index;
+        // Chụp ảnh đăng ký
+        function capturePhoto() {
+            const camera = document.getElementById('camera');
+            const photo = document.getElementById('photo');
+            const context = photo.getContext('2d');
+            photo.width = camera.videoWidth;
+            photo.height = camera.videoHeight;
+            context.drawImage(camera, 0, 0, photo.width, photo.height);
         }
 
-        function deleteStudent(index) {
-            if (confirm('Bạn có chắc chắn muốn xóa học sinh này?')) {
-                students.splice(index, 1);
-                updateTable();
-                resetForm();
-                saveData();
-            }
-        }
-
-        function exportToPNG() {
-            const table = document.querySelector('#attendanceTable table');
-            if (!table) {
-                alert('Chưa có dữ liệu để xuất!');
-                return;
-            }
-            html2canvas(table).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'danh-sach-diem-danh.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
-
-        function saveData() {
-            localStorage.setItem('attendanceData', JSON.stringify(students));
-        }
-
-        function sendEmails() {
-            if (students.length === 0) {
-                alert('Chưa có học sinh nào trong danh sách!');
-                return;
-            }
-
-            const subject = encodeURIComponent('Thông tin điểm danh');
-            const emailAddresses = students.map(student => student.email).join(',');
+        // Chụp ảnh check-in
+        function captureCheckinPhoto() {
+            const camera = document.getElementById('checkinCamera');
+            const photo = document.getElementById('checkinPhoto');
+            const context = photo.getContext('2d');
+            photo.width = camera.videoWidth;
+            photo.height = camera.videoHeight;
+            context.drawImage(camera, 0, 0, photo.width, photo.height);
             
-            let body = 'Thông tin điểm danh:\n\n';
-            students.forEach(student => {
-                body += `Học sinh: ${student.name}\n`;
-                body += `Ngày: ${student.date}\n`;
-                body += `Môn học: ${student.subject}\n`;
-                body += `Trạng thái: ${student.status}\n\n`;
-            });
+            // Giả lập nhận diện khuôn mặt và truy xuất thông tin
+            simulateFaceRecognition();
+        }
 
-            const encodedBody = encodeURIComponent(body);
-            const mailtoLink = `mailto:${emailAddresses}?subject=${subject}&body=${encodedBody}`;
+        // Giả lập nhận diện khuôn mặt và truy xuất thông tin
+        function simulateFaceRecognition() {
+            // Trong thực tế, đây sẽ là một quá trình phức tạp hơn liên quan đến AI và truy vấn cơ sở dữ liệu
+            setTimeout(() => {
+                document.getElementById('recognizedInfo').style.display = 'block';
+                document.getElementById('recognizedName').textContent = 'Tên: Nguyễn Văn A';
+                document.getElementById('recognizedEmail').textContent = 'Email: nguyenvana@example.com';
+                document.getElementById('recognizedPhone').textContent = 'SĐT: 0123456789';
+            }, 2000); // Giả lập độ trễ 2 giây cho quá trình nhận diện
+        }
 
-            window.location.href = mailtoLink;
+        // Khởi tạo camera khi trang được tải
+        window.onload = function() {
+            initCamera(document.getElementById('camera'));
+            initCamera(document.getElementById('checkinCamera'));
+        };
+
+        // Xử lý form đăng ký
+        document.getElementById('registrationForm').onsubmit = function(e) {
+            e.preventDefault();
+            // Xử lý logic đăng ký ở đây
+            console.log("Đã đăng ký khách");
+        };
+
+        // Xử lý form check-in
+        document.getElementById('checkinForm').onsubmit = function(e) {
+            e.preventDefault();
+            // Xử lý logic check-in ở đây
+            console.log("Đã check-in khách");
+            addToCheckinHistory('Nguyễn Văn A', new Date().toLocaleString());
+        };
+
+        // Thêm vào lịch sử check-in
+        function addToCheckinHistory(name, time) {
+            const table = document.getElementById('checkinHistory').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            const nameCell = newRow.insertCell(0);
+            const timeCell = newRow.insertCell(1);
+            nameCell.textContent = name;
+            timeCell.textContent = time;
+        }
+
+        // Hiển thị section được chọn
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+
+            const menuItems = document.querySelectorAll('.menu li');
+            menuItems.forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
         }
     </script>
 </body>
