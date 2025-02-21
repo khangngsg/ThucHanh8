@@ -3,332 +3,349 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Đăng ký và Check-in Khách</title>
+    <title>Hệ Thống Lưu Trữ File</title>
     <style>
-        :root {
-            --primary-color: #007AFF;
-            --background-color: #F2F2F7;
-            --text-color: #1C1C1E;
-            --secondary-text-color: #6E6E73;
-            --border-color: #D2D2D7;
-            --menu-width: 200px;
-        }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
             margin: 0;
-            padding: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            display: flex;
-        }
-        .menu {
-            width: var(--menu-width);
-            background-color: #ffffff;
-            height: 100vh;
-            padding: 20px 0;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            position: fixed;
-        }
-        .menu ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        .menu li {
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .menu li:hover, .menu li.active {
-            background-color: var(--background-color);
-            color: var(--primary-color);
-        }
-        .content {
-            flex-grow: 1;
             padding: 20px;
-            margin-left: var(--menu-width);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
         .container {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            width: 100%;
             max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
         }
-        h1, h2 {
-            font-weight: 600;
+        .container:hover {
+            transform: scale(1.01);
         }
         h1 {
-            font-size: 28px;
-            margin-bottom: 30px;
+            text-align: center;
+            color: #00ccff;
+            margin-bottom: 15px;
+            font-size: 24px;
         }
-        h2 {
-            font-size: 22px;
-            margin-top: 40px;
-            margin-bottom: 20px;
-        }
-        form {
-            margin-bottom: 40px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--secondary-text-color);
-        }
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="date"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        .button-group {
+        .login-box, .file-box {
             display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input, button, select {
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        input, select {
+            background: #2a2a2a;
+            color: #fff;
+        }
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 5px #00ccff;
         }
         button {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            background: #00ccff;
+            color: #000;
             cursor: pointer;
-            transition: all 0.3s ease;
-            flex: 1;
-            margin: 0 10px;
+            font-weight: bold;
         }
         button:hover {
-            background-color: #0056b3;
+            background: #00b3e6;
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        button:active {
-            transform: translateY(0);
-            box-shadow: none;
+        .password-wrapper {
+            position: relative;
         }
-        #camera, #photo, #checkinCamera, #checkinPhoto {
-            width: 100%;
-            max-width: 320px;
-            height: 240px;
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #00ccff;
+            font-size: 12px;
+        }
+        .search-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .file-item {
+            background: #2a2a2a;
+            padding: 10px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            object-fit: cover;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
         }
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 20px;
+        .file-item:hover {
+            background: #3a3a3a;
+            transform: translateY(-3px);
         }
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            text-align: left;
+        .file-item img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 5px;
         }
-        th {
-            background-color: #F8F8F8;
-            font-weight: 600;
+        .file-item .file-name {
+            font-size: 12px;
+            word-break: break-all;
+            max-height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
-        tr:first-child th:first-child {
-            border-top-left-radius: 8px;
+        .file-item small {
+            font-size: 10px;
+            color: #aaaaaa;
         }
-        tr:first-child th:last-child {
-            border-top-right-radius: 8px;
+        .file-item .actions {
+            margin-top: 5px;
+            display: flex;
+            gap: 5px;
+            justify-content: center;
         }
-        tr:last-child td:first-child {
-            border-bottom-left-radius: 8px;
+        .file-item .actions button {
+            padding: 5px;
+            font-size: 10px;
         }
-        tr:last-child td:last-child {
-            border-bottom-right-radius: 8px;
+        .preview-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: #2a2a2a;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow: auto;
         }
-        #recognizedInfo {
-            background-color: #F2F2F7;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            color: #fff;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            font-size: 14px;
         }
-        #recognizedInfo h3 {
-            margin-top: 0;
-            color: var(--secondary-text-color);
+        .notification.success {
+            background: #00cc00;
         }
-        #recognizedInfo p {
-            margin: 10px 0;
+        .notification.error {
+            background: #ff3333;
         }
-        .section {
-            display: none;
-        }
-        .section.active {
-            display: block;
+        .notification.show {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <div class="menu">
-        <ul>
-            <li onclick="showSection('registration')" class="active">Đăng ký khách hàng</li>
-            <li onclick="showSection('checkin')">Check-in</li>
-            <li onclick="showSection('history')">Lịch sử Check-in</li>
-        </ul>
-    </div>
-    <div class="content">
-        <div class="container">
-            <h1>Hệ thống Đăng ký và Check-in Khách</h1>
-            
-            <div id="registration" class="section active">
-                <h2>Đăng ký Khách</h2>
-                <form id="registrationForm">
-                    <label for="name">Họ và tên</label>
-                    <input type="text" id="name" name="name" required placeholder="Nhập họ và tên">
-                    
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required placeholder="Nhập địa chỉ email">
-                    
-                    <label for="phone">Số điện thoại</label>
-                    <input type="tel" id="phone" name="phone" required placeholder="Nhập số điện thoại">
-                    
-                    <label for="visitDate">Ngày đến</label>
-                    <input type="date" id="visitDate" name="visitDate" required>
-                    
-                    <h3>Chụp ảnh đăng ký</h3>
-                    <video id="camera" autoplay></video>
-                    <div class="button-group">
-                        <button type="button" onclick="capturePhoto()">Chụp ảnh</button>
-                        <button type="submit">Đăng ký</button>
-                    </div>
-                    <canvas id="photo"></canvas>
-                </form>
+    <div class="container" id="app">
+        <h1>Hệ Thống Lưu Trữ File</h1>
+        <div id="login" class="login-box">
+            <input type="text" id="username" placeholder="Username">
+            <div class="password-wrapper">
+                <input type="password" id="password" placeholder="Password">
+                <span class="toggle-password" onclick="togglePassword()">Hiện</span>
             </div>
-            
-            <div id="checkin" class="section">
-                <h2>Check-in Khách</h2>
-                <form id="checkinForm">
-                    <h3>Chụp ảnh check-in</h3>
-                    <video id="checkinCamera" autoplay></video>
-                    <div class="button-group">
-                        <button type="button" onclick="captureCheckinPhoto()">Chụp ảnh để Check-in</button>
-                        <button type="submit">Xác nhận Check-in</button>
-                    </div>
-                    <canvas id="checkinPhoto"></canvas>
-                    
-                    <div id="recognizedInfo" style="display: none;">
-                        <h3>Thông tin nhận diện</h3>
-                        <p id="recognizedName"></p>
-                        <p id="recognizedEmail"></p>
-                        <p id="recognizedPhone"></p>
-                    </div>
-                </form>
+            <button onclick="login()">Đăng Nhập</button>
+        </div>
+        <div id="fileManager" class="file-box" style="display: none;">
+            <div class="search-bar">
+                <input type="text" id="searchName" placeholder="Tìm theo tên..." onkeyup="searchFiles()">
+                <input type="date" id="searchDate" onchange="searchFiles()">
+                <select id="searchType" onchange="searchFiles()">
+                    <option value="">Tất cả loại file</option>
+                    <option value="pdf">PDF</option>
+                    <option value="word">Word</option>
+                    <option value="excel">Excel</option>
+                    <option value="powerpoint">PowerPoint</option>
+                    <option value="image">Hình ảnh</option>
+                    <option value="other">Khác</option>
+                </select>
+                <button onclick="document.getElementById('fileInput').click()">Tải File Lên</button>
+                <input type="file" id="fileInput" style="display: none;" onchange="uploadFile()">
             </div>
-
-            <div id="history" class="section">
-                <h2>Lịch sử Check-in</h2>
-                <table id="checkinHistory">
-                    <thead>
-                        <tr>
-                            <th>Họ và tên</th>
-                            <th>Thời gian Check-in</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Dữ liệu lịch sử check-in sẽ được thêm vào đây bằng JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+            <div id="fileList" class="file-list"></div>
+            <div id="preview" class="preview-box"></div>
         </div>
     </div>
+    <div id="notification" class="notification"></div>
 
     <script>
-        // Khởi tạo camera
-        async function initCamera(videoElement) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                videoElement.srcObject = stream;
-            } catch (err) {
-                console.error("Không thể truy cập camera: ", err);
+        const username = "khangsg138";
+        const password = "132004";
+        const MAX_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB
+
+        function showNotification(message, type) {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            setTimeout(() => {
+                notification.className = "notification";
+            }, 3000);
+        }
+
+        function togglePassword() {
+            const passInput = document.getElementById("password");
+            const toggle = document.querySelector(".toggle-password");
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                toggle.textContent = "Ẩn";
+            } else {
+                passInput.type = "password";
+                toggle.textContent = "Hiện";
             }
         }
 
-        // Chụp ảnh đăng ký
-        function capturePhoto() {
-            const camera = document.getElementById('camera');
-            const photo = document.getElementById('photo');
-            const context = photo.getContext('2d');
-            photo.width = camera.videoWidth;
-            photo.height = camera.videoHeight;
-            context.drawImage(camera, 0, 0, photo.width, photo.height);
+        function login() {
+            const userInput = document.getElementById("username").value;
+            const passInput = document.getElementById("password").value;
+            if (userInput === username && passInput === password) {
+                document.getElementById("login").style.display = "none";
+                document.getElementById("fileManager").style.display = "block";
+                showNotification("Đăng nhập thành công!", "success");
+                loadFiles();
+            } else {
+                showNotification("Sai thông tin đăng nhập!", "error");
+            }
         }
 
-        // Chụp ảnh check-in
-        function captureCheckinPhoto() {
-            const camera = document.getElementById('checkinCamera');
-            const photo = document.getElementById('checkinPhoto');
-            const context = photo.getContext('2d');
-            photo.width = camera.videoWidth;
-            photo.height = camera.videoHeight;
-            context.drawImage(camera, 0, 0, photo.width, photo.height);
-            
-            // Giả lập nhận diện khuôn mặt và truy xuất thông tin
-            simulateFaceRecognition();
+        function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            if (file.size > MAX_FILE_SIZE) {
+                showNotification("File vượt quá 1GB!", "error");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileData = {
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                    date: new Date().toISOString(),
+                    data: e.target.result
+                };
+                saveFile(fileData);
+                loadFiles();
+                showNotification(`Đã tải lên ${file.name}!`, "success");
+            };
+            reader.readAsDataURL(file);
         }
 
-        // Giả lập nhận diện khuôn mặt và truy xuất thông tin
-        function simulateFaceRecognition() {
-            // Trong thực tế, đây sẽ là một quá trình phức tạp hơn liên quan đến AI và truy vấn cơ sở dữ liệu
-            setTimeout(() => {
-                document.getElementById('recognizedInfo').style.display = 'block';
-                document.getElementById('recognizedName').textContent = 'Tên: Nguyễn Văn A';
-                document.getElementById('recognizedEmail').textContent = 'Email: nguyenvana@example.com';
-                document.getElementById('recognizedPhone').textContent = 'SĐT: 0123456789';
-            }, 2000); // Giả lập độ trễ 2 giây cho quá trình nhận diện
+        function saveFile(fileData) {
+            let files = JSON.parse(localStorage.getItem("files") || "[]");
+            files.push(fileData);
+            localStorage.setItem("files", JSON.stringify(files));
         }
 
-        // Khởi tạo camera khi trang được tải
-        window.onload = function() {
-            initCamera(document.getElementById('camera'));
-            initCamera(document.getElementById('checkinCamera'));
-        };
+        function loadFiles(filteredFiles = null) {
+            const fileList = document.getElementById("fileList");
+            fileList.innerHTML = "";
+            const files = filteredFiles || JSON.parse(localStorage.getItem("files") || "[]");
 
-        // Xử lý form đăng ký
-        document.getElementById('registrationForm').onsubmit = function(e) {
-            e.preventDefault();
-            // Xử lý logic đăng ký ở đây
-            console.log("Đã đăng ký khách");
-        };
-
-        // Xử lý form check-in
-        document.getElementById('checkinForm').onsubmit = function(e) {
-            e.preventDefault();
-            // Xử lý logic check-in ở đây
-            console.log("Đã check-in khách");
-            addToCheckinHistory('Nguyễn Văn A', new Date().toLocaleString());
-        };
-
-        // Thêm vào lịch sử check-in
-        function addToCheckinHistory(name, time) {
-            const table = document.getElementById('checkinHistory').getElementsByTagName('tbody')[0];
-            const newRow = table.insertRow();
-            const nameCell = newRow.insertCell(0);
-            const timeCell = newRow.insertCell(1);
-            nameCell.textContent = name;
-            timeCell.textContent = time;
+            files.forEach((file, index) => {
+                const icon = getFileIcon(file.type);
+                const div = document.createElement("div");
+                div.className = "file-item";
+                div.innerHTML = `
+                    <img src="${icon}" alt="icon">
+                    <div class="file-name">${file.name}</div>
+                    <small>${new Date(file.date).toLocaleDateString()}</small>
+                    <div class="actions">
+                        <button onclick="previewFile(${index})">Xem</button>
+                        <button onclick="downloadFile(${index})">Tải</button>
+                        <button onclick="deleteFile(${index})">Xóa</button>
+                    </div>
+                `;
+                fileList.appendChild(div);
+            });
         }
 
-        // Hiển thị section được chọn
-        function showSection(sectionId) {
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => section.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
+        function getFileIcon(type) {
+            if (type.includes("pdf")) return "https://img.icons8.com/color/48/pdf.png";
+            if (type.includes("word")) return "https://img.icons8.com/color/48/microsoft-word-2019.png";
+            if (type.includes("excel")) return "https://img.icons8.com/color/48/microsoft-excel-2019.png";
+            if (type.includes("powerpoint")) return "https://img.icons8.com/color/48/microsoft-powerpoint-2019.png";
+            if (type.includes("image")) return "https://img.icons8.com/color/48/image.png";
+            return "https://img.icons8.com/color/48/file.png";
+        }
 
-            const menuItems = document.querySelectorAll('.menu li');
-            menuItems.forEach(item => item.classList.remove('active'));
-            event.target.classList.add('active');
+        function previewFile(index) {
+            const files = JSON.parse(localStorage.getItem("files") || "[]");
+            const file = files[index];
+            const preview = document.getElementById("preview");
+
+            if (file.type.includes("pdf")) {
+                preview.innerHTML = `<embed src="${file.data}" width="100%" height="300px" type="application/pdf">`;
+            } else if (file.type.includes("image")) {
+                preview.innerHTML = `<img src="${file.data}" style="max-width: 100%;">`;
+            } else if (file.type.includes("word") || file.type.includes("excel") || file.type.includes("powerpoint")) {
+                preview.innerHTML = "Tính năng xem trước Word/Excel/PPT đang phát triển.";
+            } else {
+                preview.innerHTML = "Không hỗ trợ xem trước loại file này.";
+            }
+        }
+
+        function downloadFile(index) {
+            const files = JSON.parse(localStorage.getItem("files") || "[]");
+            const file = files[index];
+            const link = document.createElement("a");
+            link.href = file.data;
+            link.download = file.name;
+            link.click();
+            showNotification(`Đang tải ${file.name}...`, "success");
+        }
+
+        function deleteFile(index) {
+            let files = JSON.parse(localStorage.getItem("files") || "[]");
+            const fileName = files[index].name;
+            files.splice(index, 1);
+            localStorage.setItem("files", JSON.stringify(files));
+            loadFiles();
+            document.getElementById("preview").innerHTML = "";
+            showNotification(`Đã xóa ${fileName}!`, "success");
+        }
+
+        function searchFiles() {
+            const searchName = document.getElementById("searchName").value.toLowerCase();
+            const searchDate = document.getElementById("searchDate").value;
+            const searchType = document.getElementById("searchType").value;
+
+            let files = JSON.parse(localStorage.getItem("files") || "[]");
+            const filteredFiles = files.filter(file => {
+                const matchesName = file.name.toLowerCase().includes(searchName);
+                const matchesDate = searchDate ? new Date(file.date).toISOString().split("T")[0] === searchDate : true;
+                const matchesType = searchType ? file.type.includes(searchType) : true;
+                return matchesName && matchesDate && matchesType;
+            });
+
+            loadFiles(filteredFiles);
         }
     </script>
 </body>
