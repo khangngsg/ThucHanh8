@@ -5,69 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chấm Công Nhân Viên</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 450px;
-            text-align: center;
-        }
-        h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        #video {
-            width: 100%;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #3498db;
-        }
-        #employeeId {
-            padding: 10px;
-            width: 80%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        button {
-            background: #3498db;
-            color: #fff;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #2980b9;
-        }
-        #notification {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
-        }
-        .success {
-            background: #2ecc71;
-            color: #fff;
-        }
-        .error {
-            background: #e74c3c;
-            color: #fff;
-        }
+        /* Giữ nguyên style từ trước */
+        body { font-family: 'Arial', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 450px; text-align: center; }
+        h1 { color: #2c3e50; font-size: 24px; margin-bottom: 20px; }
+        #video { width: 100%; border-radius: 10px; margin-bottom: 20px; border: 2px solid #3498db; }
+        #employeeId { padding: 10px; width: 80%; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 15px; font-size: 16px; }
+        button { background: #3498db; color: #fff; border: none; padding: 12px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; transition: background 0.3s; }
+        button:hover { background: #2980b9; }
+        #notification { margin-top: 20px; padding: 10px; border-radius: 5px; display: none; }
+        .success { background: #2ecc71; color: #fff; }
+        .error { background: #e74c3c; color: #fff; }
     </style>
 </head>
 <body>
@@ -85,57 +33,32 @@
 
         // Khởi động camera
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-            })
-            .catch(err => {
-                console.error("Lỗi truy cập camera: ", err);
-                showNotification("Không thể truy cập camera! Vui lòng kiểm tra quyền.", "error");
-            });
+            .then(stream => video.srcObject = stream)
+            .catch(err => showNotification(`Lỗi camera: ${err.message}`, "error"));
 
-        // Kiểm tra kết nối WebSocket
-        socket.onopen = () => {
-            console.log("Đã kết nối với máy chủ");
-        };
-        socket.onerror = (err) => {
-            console.error("Lỗi WebSocket: ", err);
-            showNotification("Không thể kết nối với máy chủ!", "error");
-        };
+        // Log trạng thái WebSocket
+        socket.onopen = () => showNotification("Đã kết nối tới máy chủ!", "success");
+        socket.onclose = () => showNotification("Mất kết nối với máy chủ!", "error");
+        socket.onerror = (err) => showNotification("Lỗi kết nối WebSocket!", "error");
 
         // Hàm chấm công
         function checkIn() {
             const employeeId = document.getElementById('employeeId').value.trim();
-            const notification = document.getElementById('notification');
             const now = new Date();
-            const dateTime = now.toLocaleString('vi-VN', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+            const dateTime = now.toLocaleString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-            // Bắt buộc nhập mã nhân viên
             if (!employeeId) {
                 showNotification("Vui lòng nhập mã nhân viên sau khi quét Face ID!", "error");
                 return;
             }
 
-            // Gửi dữ liệu thực tế qua WebSocket
-            const data = {
-                employeeId: employeeId,
-                timestamp: dateTime,
-                device: 'Máy chấm công phụ'
-            };
-
+            const data = { employeeId, timestamp: dateTime, device: 'Máy chấm công phụ' };
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify(data));
                 showNotification(`Chấm công thành công! Mã NV: ${employeeId} - ${dateTime}`, "success");
                 document.getElementById('employeeId').value = '';
             } else {
-                showNotification("Không thể gửi dữ liệu, mất kết nối với máy chủ!", "error");
+                showNotification("Không thể gửi dữ liệu, chưa kết nối máy chủ!", "error");
             }
         }
 
@@ -145,9 +68,7 @@
             notification.style.display = 'block';
             notification.className = type;
             notification.textContent = message;
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
+            setTimeout(() => notification.style.display = 'none', 3000);
         }
     </script>
 </body>
