@@ -94,7 +94,7 @@
 
         // Hàm chấm công
         function checkIn() {
-            const employeeId = document.getElementById('employeeId').value;
+            const employeeId = document.getElementById('employeeId').value.trim(); // Loại bỏ khoảng trắng
             const notification = document.getElementById('notification');
             const now = new Date();
             const dateTime = now.toLocaleString('vi-VN', {
@@ -107,12 +107,13 @@
                 second: '2-digit'
             });
 
+            // Kiểm tra xem có nhập mã nhân viên không
             if (!employeeId) {
-                showNotification("Vui lòng nhập mã nhân viên!", "error");
+                showNotification("Vui lòng nhập mã nhân viên sau khi quét Face ID!", "error");
                 return;
             }
 
-            // Giả lập kiểm tra Face ID thành công
+            // Giả lập quét Face ID thành công (trong thực tế sẽ kiểm tra khuôn mặt)
             const data = {
                 employeeId: employeeId,
                 timestamp: dateTime,
@@ -123,7 +124,7 @@
             console.log('Gửi dữ liệu về máy quản trị:', data);
             showNotification(`Chấm công thành công! Mã NV: ${employeeId} - ${dateTime}`, "success");
 
-            // Reset input
+            // Reset input sau khi chấm công thành công
             document.getElementById('employeeId').value = '';
         }
 
@@ -137,20 +138,6 @@
                 notification.style.display = 'none';
             }, 3000);
         }
-
-        // Mô phỏng máy quản trị nhận dữ liệu
-        function receiveCheckInData(data) {
-            showNotification(`Nhận chấm công từ ${data.device}: Mã NV: ${data.employeeId} - ${data.timestamp}`, "success");
-        }
-
-        // Giả lập nhận dữ liệu sau 5 giây
-        setTimeout(() => {
-            receiveCheckInData({
-                employeeId: 'NV001',
-                timestamp: new Date().toLocaleString('vi-VN'),
-                device: 'Máy chấm công phụ'
-            });
-        }, 5000);
     </script>
 </body>
 </html>
