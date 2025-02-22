@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Chấm Công Face ID</title>
+    <title>Chấm Công Nhân Viên</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -72,7 +72,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Hệ Thống Chấm Công Face ID</h1>
+        <h1>Chấm Công Nhân Viên</h1>
         <video id="video" autoplay playsinline></video>
         <input type="text" id="employeeId" placeholder="Nhập mã nhân viên sau khi quét">
         <button onclick="checkIn()">Chấm Công</button>
@@ -81,6 +81,7 @@
 
     <script>
         const video = document.getElementById('video');
+        const socket = new WebSocket('ws://localhost:8080');
 
         // Khởi động camera
         navigator.mediaDevices.getUserMedia({ video: true })
@@ -92,9 +93,18 @@
                 showNotification("Không thể truy cập camera! Vui lòng kiểm tra quyền.", "error");
             });
 
+        // Kiểm tra kết nối WebSocket
+        socket.onopen = () => {
+            console.log("Đã kết nối với máy chủ");
+        };
+        socket.onerror = (err) => {
+            console.error("Lỗi WebSocket: ", err);
+            showNotification("Không thể kết nối với máy chủ!", "error");
+        };
+
         // Hàm chấm công
         function checkIn() {
-            const employeeId = document.getElementById('employeeId').value.trim(); // Loại bỏ khoảng trắng
+            const employeeId = document.getElementById('employeeId').value.trim();
             const notification = document.getElementById('notification');
             const now = new Date();
             const dateTime = now.toLocaleString('vi-VN', {
@@ -107,25 +117,26 @@
                 second: '2-digit'
             });
 
-            // Kiểm tra xem có nhập mã nhân viên không
+            // Bắt buộc nhập mã nhân viên
             if (!employeeId) {
                 showNotification("Vui lòng nhập mã nhân viên sau khi quét Face ID!", "error");
                 return;
             }
 
-            // Giả lập quét Face ID thành công (trong thực tế sẽ kiểm tra khuôn mặt)
+            // Gửi dữ liệu thực tế qua WebSocket
             const data = {
                 employeeId: employeeId,
                 timestamp: dateTime,
                 device: 'Máy chấm công phụ'
             };
 
-            // Mô phỏng gửi dữ liệu về máy quản trị
-            console.log('Gửi dữ liệu về máy quản trị:', data);
-            showNotification(`Chấm công thành công! Mã NV: ${employeeId} - ${dateTime}`, "success");
-
-            // Reset input sau khi chấm công thành công
-            document.getElementById('employeeId').value = '';
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify(data));
+                showNotification(`Chấm công thành công! Mã NV: ${employeeId} - ${dateTime}`, "success");
+                document.getElementById('employeeId').value = '';
+            } else {
+                showNotification("Không thể gửi dữ liệu, mất kết nối với máy chủ!", "error");
+            }
         }
 
         // Hàm hiển thị thông báo
