@@ -3,350 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Lưu Trữ File</title>
+    <title>Hệ Thống Chấm Công Face ID</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #0a0a0a;
-            color: #ffffff;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
+            margin: 0;
         }
         .container {
-            background: #1a1a1a;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-            width: 100%;
-            max-width: 800px;
-            transition: transform 0.2s ease;
-        }
-        .container:hover {
-            transform: scale(1.01);
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 450px;
+            text-align: center;
         }
         h1 {
-            text-align: center;
-            color: #00ccff;
-            margin-bottom: 15px;
+            color: #2c3e50;
             font-size: 24px;
+            margin-bottom: 20px;
         }
-        .login-box, .file-box {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        #video {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #3498db;
         }
-        input, button, select {
-            padding: 8px;
-            border: none;
+        #employeeId {
+            padding: 10px;
+            width: 80%;
+            border: 1px solid #ddd;
             border-radius: 5px;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-        input, select {
-            background: #2a2a2a;
-            color: #fff;
-        }
-        input:focus, select:focus {
-            outline: none;
-            box-shadow: 0 0 5px #00ccff;
+            margin-bottom: 15px;
+            font-size: 16px;
         }
         button {
-            background: #00ccff;
-            color: #000;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            font-weight: bold;
+            transition: background 0.3s;
         }
         button:hover {
-            background: #00b3e6;
-            transform: translateY(-2px);
+            background: #2980b9;
         }
-        .password-wrapper {
-            position: relative;
-        }
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #00ccff;
-            font-size: 12px;
-        }
-        .search-bar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        .file-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .file-item {
-            background: #2a2a2a;
+        #notification {
+            margin-top: 20px;
             padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            overflow: hidden;
-        }
-        .file-item:hover {
-            background: #3a3a3a;
-            transform: translateY(-3px);
-        }
-        .file-item img {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 5px;
-        }
-        .file-item .file-name {
-            font-size: 12px;
-            word-break: break-all;
-            max-height: 40px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-        .file-item small {
-            font-size: 10px;
-            color: #aaaaaa;
-        }
-        .file-item .actions {
-            margin-top: 5px;
-            display: flex;
-            gap: 5px;
-            justify-content: center;
-        }
-        .file-item .actions button {
-            padding: 5px;
-            font-size: 10px;
-        }
-        .preview-box {
-            margin-top: 15px;
-            padding: 10px;
-            background: #2a2a2a;
             border-radius: 5px;
-            max-height: 300px;
-            overflow: auto;
+            display: none;
         }
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 15px;
-            border-radius: 5px;
+        .success {
+            background: #2ecc71;
             color: #fff;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            font-size: 14px;
         }
-        .notification.success {
-            background: #00cc00;
-        }
-        .notification.error {
-            background: #ff3333;
-        }
-        .notification.show {
-            opacity: 1;
+        .error {
+            background: #e74c3c;
+            color: #fff;
         }
     </style>
 </head>
 <body>
-    <div class="container" id="app">
-        <h1>Hệ Thống Lưu Trữ File</h1>
-        <div id="login" class="login-box">
-            <input type="text" id="username" placeholder="Username">
-            <div class="password-wrapper">
-                <input type="password" id="password" placeholder="Password">
-                <span class="toggle-password" onclick="togglePassword()">Hiện</span>
-            </div>
-            <button onclick="login()">Đăng Nhập</button>
-        </div>
-        <div id="fileManager" class="file-box" style="display: none;">
-            <div class="search-bar">
-                <input type="text" id="searchName" placeholder="Tìm theo tên..." onkeyup="searchFiles()">
-                <input type="date" id="searchDate" onchange="searchFiles()">
-                <select id="searchType" onchange="searchFiles()">
-                    <option value="">Tất cả loại file</option>
-                    <option value="pdf">PDF</option>
-                    <option value="word">Word</option>
-                    <option value="excel">Excel</option>
-                    <option value="powerpoint">PowerPoint</option>
-                    <option value="image">Hình ảnh</option>
-                    <option value="other">Khác</option>
-                </select>
-                <button onclick="document.getElementById('fileInput').click()">Tải File Lên</button>
-                <input type="file" id="fileInput" style="display: none;" onchange="uploadFile()">
-            </div>
-            <div id="fileList" class="file-list"></div>
-            <div id="preview" class="preview-box"></div>
-        </div>
+    <div class="container">
+        <h1>Hệ Thống Chấm Công Face ID</h1>
+        <video id="video" autoplay playsinline></video>
+        <input type="text" id="employeeId" placeholder="Nhập mã nhân viên sau khi quét">
+        <button onclick="checkIn()">Chấm Công</button>
+        <div id="notification"></div>
     </div>
-    <div id="notification" class="notification"></div>
 
     <script>
-        const username = "khangsg138";
-        const password = "132004";
-        const MAX_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB
+        const video = document.getElementById('video');
 
-        function showNotification(message, type) {
-            const notification = document.getElementById("notification");
-            notification.textContent = message;
-            notification.className = `notification ${type} show`;
-            setTimeout(() => {
-                notification.className = "notification";
-            }, 3000);
-        }
+        // Khởi động camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                console.error("Lỗi truy cập camera: ", err);
+                showNotification("Không thể truy cập camera! Vui lòng kiểm tra quyền.", "error");
+            });
 
-        function togglePassword() {
-            const passInput = document.getElementById("password");
-            const toggle = document.querySelector(".toggle-password");
-            if (passInput.type === "password") {
-                passInput.type = "text";
-                toggle.textContent = "Ẩn";
-            } else {
-                passInput.type = "password";
-                toggle.textContent = "Hiện";
-            }
-        }
+        // Hàm chấm công
+        function checkIn() {
+            const employeeId = document.getElementById('employeeId').value;
+            const notification = document.getElementById('notification');
+            const now = new Date();
+            const dateTime = now.toLocaleString('vi-VN', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
 
-        function login() {
-            const userInput = document.getElementById("username").value;
-            const passInput = document.getElementById("password").value;
-            if (userInput === username && passInput === password) {
-                document.getElementById("login").style.display = "none";
-                document.getElementById("fileManager").style.display = "block";
-                showNotification("Đăng nhập thành công!", "success");
-                loadFiles();
-            } else {
-                showNotification("Sai thông tin đăng nhập!", "error");
-            }
-        }
-
-        function uploadFile() {
-            const fileInput = document.getElementById("fileInput");
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            if (file.size > MAX_FILE_SIZE) {
-                showNotification("File vượt quá 1GB!", "error");
+            if (!employeeId) {
+                showNotification("Vui lòng nhập mã nhân viên!", "error");
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const fileData = {
-                    name: file.name,
-                    type: file.type,
-                    size: file.size,
-                    date: new Date().toISOString(),
-                    data: e.target.result
-                };
-                saveFile(fileData);
-                loadFiles();
-                showNotification(`Đã tải lên ${file.name}!`, "success");
+            // Giả lập kiểm tra Face ID thành công
+            const data = {
+                employeeId: employeeId,
+                timestamp: dateTime,
+                device: 'Máy chấm công phụ'
             };
-            reader.readAsDataURL(file);
+
+            // Mô phỏng gửi dữ liệu về máy quản trị
+            console.log('Gửi dữ liệu về máy quản trị:', data);
+            showNotification(`Chấm công thành công! Mã NV: ${employeeId} - ${dateTime}`, "success");
+
+            // Reset input
+            document.getElementById('employeeId').value = '';
         }
 
-        function saveFile(fileData) {
-            let files = JSON.parse(localStorage.getItem("files") || "[]");
-            files.push(fileData);
-            localStorage.setItem("files", JSON.stringify(files));
+        // Hàm hiển thị thông báo
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.style.display = 'block';
+            notification.className = type;
+            notification.textContent = message;
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
         }
 
-        function loadFiles(filteredFiles = null) {
-            const fileList = document.getElementById("fileList");
-            fileList.innerHTML = "";
-            const files = filteredFiles || JSON.parse(localStorage.getItem("files") || "[]");
+        // Mô phỏng máy quản trị nhận dữ liệu
+        function receiveCheckInData(data) {
+            showNotification(`Nhận chấm công từ ${data.device}: Mã NV: ${data.employeeId} - ${data.timestamp}`, "success");
+        }
 
-            files.forEach((file, index) => {
-                const icon = getFileIcon(file.type);
-                const div = document.createElement("div");
-                div.className = "file-item";
-                div.innerHTML = `
-                    <img src="${icon}" alt="icon">
-                    <div class="file-name">${file.name}</div>
-                    <small>${new Date(file.date).toLocaleDateString()}</small>
-                    <div class="actions">
-                        <button onclick="previewFile(${index})">Xem</button>
-                        <button onclick="downloadFile(${index})">Tải</button>
-                        <button onclick="deleteFile(${index})">Xóa</button>
-                    </div>
-                `;
-                fileList.appendChild(div);
+        // Giả lập nhận dữ liệu sau 5 giây
+        setTimeout(() => {
+            receiveCheckInData({
+                employeeId: 'NV001',
+                timestamp: new Date().toLocaleString('vi-VN'),
+                device: 'Máy chấm công phụ'
             });
-        }
-
-        function getFileIcon(type) {
-            if (type.includes("pdf")) return "https://img.icons8.com/color/48/pdf.png";
-            if (type.includes("word")) return "https://img.icons8.com/color/48/microsoft-word-2019.png";
-            if (type.includes("excel")) return "https://img.icons8.com/color/48/microsoft-excel-2019.png";
-            if (type.includes("powerpoint")) return "https://img.icons8.com/color/48/microsoft-powerpoint-2019.png";
-            if (type.includes("image")) return "https://img.icons8.com/color/48/image.png";
-            return "https://img.icons8.com/color/48/file.png";
-        }
-
-        function previewFile(index) {
-            const files = JSON.parse(localStorage.getItem("files") || "[]");
-            const file = files[index];
-            const preview = document.getElementById("preview");
-
-            if (file.type.includes("pdf")) {
-                preview.innerHTML = `<embed src="${file.data}" width="100%" height="300px" type="application/pdf">`;
-            } else if (file.type.includes("image")) {
-                preview.innerHTML = `<img src="${file.data}" style="max-width: 100%;">`;
-            } else if (file.type.includes("word") || file.type.includes("excel") || file.type.includes("powerpoint")) {
-                preview.innerHTML = "Tính năng xem trước Word/Excel/PPT đang phát triển.";
-            } else {
-                preview.innerHTML = "Không hỗ trợ xem trước loại file này.";
-            }
-        }
-
-        function downloadFile(index) {
-            const files = JSON.parse(localStorage.getItem("files") || "[]");
-            const file = files[index];
-            const link = document.createElement("a");
-            link.href = file.data;
-            link.download = file.name;
-            link.click();
-            showNotification(`Đang tải ${file.name}...`, "success");
-        }
-
-        function deleteFile(index) {
-            let files = JSON.parse(localStorage.getItem("files") || "[]");
-            const fileName = files[index].name;
-            files.splice(index, 1);
-            localStorage.setItem("files", JSON.stringify(files));
-            loadFiles();
-            document.getElementById("preview").innerHTML = "";
-            showNotification(`Đã xóa ${fileName}!`, "success");
-        }
-
-        function searchFiles() {
-            const searchName = document.getElementById("searchName").value.toLowerCase();
-            const searchDate = document.getElementById("searchDate").value;
-            const searchType = document.getElementById("searchType").value;
-
-            let files = JSON.parse(localStorage.getItem("files") || "[]");
-            const filteredFiles = files.filter(file => {
-                const matchesName = file.name.toLowerCase().includes(searchName);
-                const matchesDate = searchDate ? new Date(file.date).toISOString().split("T")[0] === searchDate : true;
-                const matchesType = searchType ? file.type.includes(searchType) : true;
-                return matchesName && matchesDate && matchesType;
-            });
-
-            loadFiles(filteredFiles);
-        }
+        }, 5000);
     </script>
 </body>
 </html>
